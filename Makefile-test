@@ -1,0 +1,52 @@
+
+
+I= gettysburg.txt
+J= shakespeare.txt
+KEY= abc
+KEYX= abcdefghijklmnopqrstuvwxyzzyxwvutsrqpomnlkjihgfedcba
+#VERBOSE= -v
+MF= -f Makefile-test
+PY= python3
+#PY= python
+GM= grade.out
+
+
+RED= \033[0;31m
+GREEN= \033[0;32m
+NC= \033[0m
+
+run:
+	-make ${MF} test-1  > ${GM}
+	-make ${MF} test-2  >> ${GM}
+	-make ${MF} test-4  >> ${GM}
+	-make ${MF} test-5  >> ${GM}
+	make ${MF} clean
+
+
+test-1:
+	cat $I | ${PY} vigenere.py ${KEY} > vigenere.out
+	diff -w vigenere.out proj1-ref1.txt
+	@echo "*** ${GREEN}PASSED the test ${NC}***"
+
+test-2:
+	cat proj1-ref1.txt | ${PY} vigenere.py -d ${KEY} > vigenere.out
+	diff -w vigenere.out proj1-ref2.txt
+	@echo "*** ${GREEN}PASSED the test ${NC}***"
+
+test-4:
+	cat $J | ${PY} vigenere.py ${KEYX} > vigenere.out
+	diff -w vigenere.out shakeEnc.txt
+	@echo "*** ${GREEN}PASSED the test ${NC}***"
+
+test-5:
+	cat shakeEnc.txt | ${PY} vigenere.py -d ${KEYX} > vigenere.out
+	diff -w vigenere.out shakeDec.txt
+	@echo "*** ${GREEN}PASSED the test ${NC}***"  
+
+git-push:
+	git add ${GM} Makefile-test shakespeare.txt shakeDec.txt shakeEnc.txt
+	git commit -m ok
+	git push
+
+clean:
+	-rm vigenere.out ${GM}
